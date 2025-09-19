@@ -22,10 +22,11 @@ while (hoogte < 300 || hoogte > 900)
     }
 }
 
+
 // Maak een Form aan
 Form scherm = new Form();
 scherm.Text = "Mandelbrot";
-scherm.ClientSize = new Size(hoogte+200, hoogte);
+scherm.ClientSize = new Size(hoogte + 200, hoogte);
 
 // Bitmap en Label aanmaken
 int breedte_afb = hoogte - 20;
@@ -40,56 +41,86 @@ afbeelding.Size = new Size(breedte_afb, breedte_afb);
 // Buttons aanmaken
 Button knop = new Button();
 scherm.Controls.Add(knop);
-knop.Location = new Point(20, 300);
+knop.Location = new Point(20, 230);
 knop.Text = "GO";
 knop.Size = new Size(120, 50);
+
+
+// Beginwaardes
+double schaal = 4.0 / breedte_afb;
+double x = 0.0, y = 0.0;
+int max = 1000;
 
 // Tekstbox maken
 TextBox tekstbox_schaal = new TextBox();
 scherm.Controls.Add(tekstbox_schaal);
-tekstbox_schaal.Location = new Point(80, 100);
+tekstbox_schaal.Location = new Point(70, 80);
+tekstbox_schaal.Size = new Size(130, 50);
 
-TextBox tekstbox_middenx = new TextBox();
-scherm.Controls.Add(tekstbox_middenx);
-tekstbox_middenx.Location = new Point(80, 140);
+TextBox tekstbox_x = new TextBox();
+scherm.Controls.Add(tekstbox_x);
+tekstbox_x.Location = new Point(70, 120);
+tekstbox_x.Size = new Size(130, 50);
 
-TextBox tekstbox_middeny = new TextBox();
-scherm.Controls.Add(tekstbox_middeny);
-tekstbox_middeny.Location = new Point(80, 180);
+TextBox tekstbox_y = new TextBox();
+scherm.Controls.Add(tekstbox_y);
+tekstbox_y.Location = new Point(70, 160);
+tekstbox_y.Size = new Size(130, 50);
 
 TextBox tekstbox_max = new TextBox();
 scherm.Controls.Add(tekstbox_max);
-tekstbox_max.Location = new Point(80, 220);
+tekstbox_max.Location = new Point(70, 200);
+tekstbox_max.Size = new Size(130, 50);
+
 
 // text voor de tekstbox maken
 Label schaaltekst = new Label();
 scherm.Controls.Add(schaaltekst);
-schaaltekst.Location = new Point(10, 100);
+schaaltekst.Location = new Point(10, 80);
 schaaltekst.Text = "schaal:";
 
 Label middenxtekst = new Label();
 scherm.Controls.Add(middenxtekst);
-middenxtekst.Location = new Point(10, 140);
+middenxtekst.Location = new Point(10, 120);
 middenxtekst.Text = "midden x:";
 
 Label middenytekst = new Label();
 scherm.Controls.Add(middenytekst);
-middenytekst.Location = new Point(10, 180);
+middenytekst.Location = new Point(10, 160);
 middenytekst.Text = "midden y:";
-
 
 Label maxtekst = new Label();
 scherm.Controls.Add(maxtekst);
-maxtekst.Location = new Point(10, 220);
+maxtekst.Location = new Point(10, 200);
 maxtekst.Text = "max aantal:";
 
+//plaatje en textboxen updaten
+void update()
+{
+    generate(x, y, schaal, max);
+    afbeelding.Invalidate();
+
+    tekstbox_schaal.Text = $"{schaal}";
+    tekstbox_schaal.Invalidate();
+
+    tekstbox_x.Text = $"{x}";
+    tekstbox_x.Invalidate();
+
+    tekstbox_y.Text = $"{y}";
+    tekstbox_y.Invalidate();
+
+    tekstbox_max.Text = $"{max}";
+    tekstbox_max.Invalidate();
+}
 
 void go(object o, EventArgs e)
 {
-
-
+    double schaal = double.Parse(tekstbox_schaal.Text);
+    double x = double.Parse(tekstbox_x.Text);
+    double y = double.Parse(tekstbox_y.Text);
+    int max = int.Parse(tekstbox_max.Text);
+    update();
 }
-
 
 knop.Click += go;
 
@@ -123,11 +154,6 @@ int mandelgetal(double x, double y, int max)
     return (x, y);
 }
 
-
-double schaal = 0.01;
-double x_min = schaal *-200, x_max = schaal * 200;
-double y_min = schaal * -200, y_max = schaal * 200;
-
 // Genereer de mandelbrot met een bepaald middenpunt
 void generate(double x, double y, double schaal, int max)
 {
@@ -155,22 +181,31 @@ void generate(double x, double y, double schaal, int max)
 }
 
 // Registreer muis inputs en zoom in of uit
-void muisZoom(object o, MouseEventArgs ea, double schaal, int max)
+void muisKlik(object s, MouseEventArgs ea)
 {
-    Console.WriteLine($"x: {ea.X} y: {ea.Y}");
-    double x = (ea.X - breedte_afb / 2) * schaal;
-    double y = (ea.Y - breedte_afb / 2) * -schaal;
-    Console.WriteLine($"x: {x} y: {y}");
-    generate(x, y, schaal, max);
-    afbeelding.Invalidate();
+    double domein = breedte_afb * schaal; // Assenstelsel lengte van het domein/bereik
+
+    // Min en max van x en y berekenen m.b.v. domein en middelpunt
+    double x_min = x - domein / 2;
+    double x_max = x + domein / 2;
+    double y_min = y - domein / 2;
+    double y_max = y + domein / 2;
+
+    // Bereken (x, y) van klik en zet daar het middelpunt
+    (double x_klik, double y_klik) = coördinaat(ea.X, ea.Y, x_min, x_max, y_min, y_max);
+
+    x = x_klik;
+    y = y_klik;
+
+    // Zoom in of uit
+    if (ea.Button == MouseButtons.Left)
+        schaal *= 0.5;
+    if (ea.Button == MouseButtons.Right)
+        schaal *= 2.0;
+    update();
 }
 
-double x_begin = 0.0, y_begin = 0.0;
-double schaal = 4.0 / breedte_afb;
+afbeelding.MouseClick += muisKlik;
 
-afbeelding.MouseClick += (s, ea) => schaal *= 0.5;
-afbeelding.MouseClick += (s, ea) => muisZoom(s, ea, schaal, 1000);
-
-generate(x_begin, y_begin, schaal, 1000);
-
+update();
 Application.Run(scherm);
