@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.VisualBasic.Devices;
+using System.Security.Cryptography.X509Certificates;
 
 // Afmetingen Form bepalen
 int breedte = 0;
@@ -67,33 +68,48 @@ int mandelgetal(double x, double y, int max)
 }
 
 // Genereer de mandelbrot met een bepaald middenpunt
-void generate(double x_min, double x_max, double y_min, double y_max, int max)
+void generate(double x, double y, double schaal, int max)
 {
-    for (int px = 0;  px < breedte_afb; px++)   // Ga langs alle x coördinaten
+    double domein = breedte_afb * schaal;
+
+    double x_min = x - 0.5 * domein;
+    double x_max = x + 0.5 * domein;
+    double y_min = y - 0.5 * domein;
+    double y_max = y + 0.5 * domein;
+
+    for (int px = 0; px < breedte_afb; px++)   // Ga langs alle x coördinaten
     {
         for (int py = 0; py < breedte_afb; py++) // Ga langs alle y coördinaten
         {
-            (double x, double y) = coördinaat(px, py, x_min, x_max, y_min, y_max);
-            int m_getal = mandelgetal(x, y, max);      // Bereken het mandelgetal van deze pixel
+            (double x2, double y2) = coördinaat(px, py, x_min, x_max, y_min, y_max);
+            int m_getal = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel
             if (m_getal == max)                        // Check of het mandelgetal groter is dan max
-             plaatje.SetPixel(px, py, Color.Black);
+                plaatje.SetPixel(px, py, Color.Black);
             else if (m_getal % 2 == 0)                  // Kleurt even mandelgetallen zwart
-              plaatje.SetPixel(px, py, Color.Black);
+                plaatje.SetPixel(px, py, Color.Black);
             else                                        // Kleurt de rest wit
-              plaatje.SetPixel(px, py, Color.White);
+                plaatje.SetPixel(px, py, Color.White);
         }
     }
 }
 
-// Registreer muis inputs
-(double x, double y) muisKlik(object o, MouseEventArgs ea)
+// Registreer muis inputs en zoom in of uit
+void muisZoom(object o, MouseEventArgs ea, double schaal, int max)
 {
-    ea.X
-    ea.Y
+    Console.WriteLine($"x: {ea.X} y: {ea.Y}");
+    double x = (ea.X - breedte_afb / 2) * schaal;
+    double y = (ea.Y - breedte_afb / 2) * -schaal;
+    Console.WriteLine($"x: {x} y: {y}");
+    generate(x, y, schaal, max);
+    afbeelding.Invalidate();
 }
 
-afbeelding.MouseClick += muisKlik;
+double x_begin = 0.0, y_begin = 0.0;
+double schaal = 4.0 / breedte_afb;
 
-generate(-2.0, 2.0, -2.0, 2.0, 1000);
+afbeelding.MouseClick += (s, ea) => schaal *= 0.5;
+afbeelding.MouseClick += (s, ea) => muisZoom(s, ea, schaal, 1000);
+
+generate(x_begin, y_begin, schaal, 1000);
 
 Application.Run(scherm);
