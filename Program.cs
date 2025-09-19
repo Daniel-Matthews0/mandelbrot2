@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
+using Microsoft.VisualBasic.Devices;
 
 // Afmetingen Form bepalen
 int breedte = 0;
@@ -54,7 +55,7 @@ int mandelgetal(double x, double y, int max)
     return t;
 }
 
-// Zet pixel coördinaten om in wiskundige coördinaten83y2498t7u2
+// Zet pixel coördinaten om in wiskundige coördinaten
 (double, double) coördinaat(int px, int py, double x_min, double x_max, double y_min, double y_max)
 {
     double x = x_min + px * (x_max - x_min) / (breedte_afb - 1);
@@ -65,27 +66,34 @@ int mandelgetal(double x, double y, int max)
     return (x, y);
 }
 
-double x_min = -2.0, x_max = 2.0;
-double y_min = -2.0, y_max = 2.0;
-
-int max = 1000; // Kies hier de max herhalingen
-int px = 0, py = 0; // Begin bij pixel (0,0)
-
-while (px < breedte_afb)   // Ga langs alle x coördinaten
+// Genereer de mandelbrot met een bepaald middenpunt
+void generate(double x_min, double x_max, double y_min, double y_max, int max)
 {
-    while (py < breedte_afb) // Ga langs alle y coördinaten
+    for (int px = 0;  px < breedte_afb; px++)   // Ga langs alle x coördinaten
     {
-        (double x, double y) = coördinaat(px, py, x_min, x_max, y_min, y_max);
-        int m_getal = mandelgetal(x, y, max);      // Bereken het mandelgetal van deze pixel
-        if (m_getal == max)                        // Check of het mandelgetal groter is dan max
-            plaatje.SetPixel(px, py, Color.Black);
-        else if (m_getal % 2 == 0)                  // Kleurt even mandelgetallen zwart
-            plaatje.SetPixel(px, py, Color.Black);
-        else                                        // Kleurt de rest wit
-            plaatje.SetPixel(px, py, Color.White);
-        py++;
+        for (int py = 0; py < breedte_afb; py++) // Ga langs alle y coördinaten
+        {
+            (double x, double y) = coördinaat(px, py, x_min, x_max, y_min, y_max);
+            int m_getal = mandelgetal(x, y, max);      // Bereken het mandelgetal van deze pixel
+            if (m_getal == max)                        // Check of het mandelgetal groter is dan max
+             plaatje.SetPixel(px, py, Color.Black);
+            else if (m_getal % 2 == 0)                  // Kleurt even mandelgetallen zwart
+              plaatje.SetPixel(px, py, Color.Black);
+            else                                        // Kleurt de rest wit
+              plaatje.SetPixel(px, py, Color.White);
+        }
     }
-    px++;
-    py = 0; // Zet de y waarde weer terug naar 0
 }
+
+// Registreer muis inputs
+(double x, double y) muisKlik(object o, MouseEventArgs ea)
+{
+    ea.X
+    ea.Y
+}
+
+afbeelding.MouseClick += muisKlik;
+
+generate(-2.0, 2.0, -2.0, 2.0, 1000);
+
 Application.Run(scherm);
