@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using System.Drawing;
 using Microsoft.VisualBasic.Devices;
@@ -25,7 +25,7 @@ while (hoogte < 300 || hoogte > 900)
 // Maak een Form aan
 Form scherm = new Form();
 scherm.Text = "Mandelbrot";
-scherm.ClientSize = new Size(hoogte+150, hoogte);
+scherm.ClientSize = new Size(hoogte+200, hoogte);
 
 // Bitmap en Label aanmaken
 int breedte_afb = hoogte - 20;
@@ -33,7 +33,7 @@ Bitmap plaatje = new Bitmap(breedte_afb, breedte_afb);
 Label afbeelding = new Label();
 scherm.Controls.Add(afbeelding);
 afbeelding.Image = plaatje;
-afbeelding.Location = new Point(160, 10);
+afbeelding.Location = new Point(210, 10);
 afbeelding.Size = new Size(breedte_afb, breedte_afb);
 
 
@@ -44,17 +44,54 @@ knop.Location = new Point(20, 300);
 knop.Text = "GO";
 knop.Size = new Size(120, 50);
 
-// Textinvoer
+// Tekstbox maken
 TextBox tekstbox_schaal = new TextBox();
 scherm.Controls.Add(tekstbox_schaal);
-tekstbox_schaal.Location = new Point(50, 100);
+tekstbox_schaal.Location = new Point(80, 100);
+
+TextBox tekstbox_middenx = new TextBox();
+scherm.Controls.Add(tekstbox_middenx);
+tekstbox_middenx.Location = new Point(80, 140);
+
+TextBox tekstbox_middeny = new TextBox();
+scherm.Controls.Add(tekstbox_middeny);
+tekstbox_middeny.Location = new Point(80, 180);
+
+TextBox tekstbox_max = new TextBox();
+scherm.Controls.Add(tekstbox_max);
+tekstbox_max.Location = new Point(80, 220);
+
+// text voor de tekstbox maken
+Label schaaltekst = new Label();
+scherm.Controls.Add(schaaltekst);
+schaaltekst.Location = new Point(10, 100);
+schaaltekst.Text = "schaal:";
+
+Label middenxtekst = new Label();
+scherm.Controls.Add(middenxtekst);
+middenxtekst.Location = new Point(10, 140);
+middenxtekst.Text = "midden x:";
+
+Label middenytekst = new Label();
+scherm.Controls.Add(middenytekst);
+middenytekst.Location = new Point(10, 180);
+middenytekst.Text = "midden y:";
 
 
-// text schaal
-Label schaal = new Label();
+Label maxtekst = new Label();
+scherm.Controls.Add(maxtekst);
+maxtekst.Location = new Point(10, 220);
+maxtekst.Text = "max aantal:";
 
 
+void go(object o, EventArgs e)
+{
 
+
+}
+
+
+knop.Click += go;
 
 // Berekent het Mandelgetal van punt (x, y).
 int mandelgetal(double x, double y, int max)
@@ -85,6 +122,8 @@ int mandelgetal(double x, double y, int max)
     double y = y_max - py * (y_max - y_min) / (breedte_afb - 1); // Hier doen we - i.p.v. +, omdat pixels boven beginnen
     return (x, y);
 }
+
+
 double schaal = 0.01;
 double x_min = schaal *-200, x_max = schaal * 200;
 double y_min = schaal * -200, y_max = schaal * 200;
