@@ -54,7 +54,7 @@ int mandelgetal(double x, double y, int max)
     return t;
 }
 
-// Zet pixel coördinaten om in wiskundige coördinaten
+// Zet pixel coördinaten om in wiskundige coördinaten83y2498t7u2
 (double, double) coördinaat(int px, int py, double x_min, double x_max, double y_min, double y_max)
 {
     double x = x_min + px * (x_max - x_min) / (breedte_afb - 1);
