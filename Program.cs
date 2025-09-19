@@ -1,8 +1,6 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
-using Microsoft.VisualBasic.Devices;
-using System.Security.Cryptography.X509Certificates;
 
 // Afmetingen Form bepalen
 int hoogte = 0;
@@ -115,10 +113,10 @@ void update()
 
 void go(object o, EventArgs e)
 {
-    double schaal = double.Parse(tekstbox_schaal.Text);
-    double x = double.Parse(tekstbox_x.Text);
-    double y = double.Parse(tekstbox_y.Text);
-    int max = int.Parse(tekstbox_max.Text);
+    schaal = double.Parse(tekstbox_schaal.Text);
+    x = double.Parse(tekstbox_x.Text);
+    y = double.Parse(tekstbox_y.Text);
+    max = int.Parse(tekstbox_max.Text);
     update();
 }
 
