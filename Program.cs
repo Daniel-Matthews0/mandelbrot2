@@ -3,16 +3,16 @@ using System.Windows.Forms;
 using System.Drawing;
 
 // Afmetingen Form bepalen
-int breedte = 0;
-while (breedte < 300 || breedte > 900)
+int hoogte = 0;
+while (hoogte < 300 || hoogte > 900)
 {
-    Console.Write("Hoeveel pixels breed is het scherm (300-900): ");
+    Console.Write("Hoeveel pixels hoog is het scherm (300-900): ");
     string user_input = Console.ReadLine();
 
     // Checken of het een geldig getal is
     try
     {
-        breedte = int.Parse(user_input);
+        hoogte = int.Parse(user_input);
     }
     catch (Exception e)
     {
@@ -23,16 +23,35 @@ while (breedte < 300 || breedte > 900)
 // Maak een Form aan
 Form scherm = new Form();
 scherm.Text = "Mandelbrot";
-scherm.ClientSize = new Size(breedte, breedte + 90);
+scherm.ClientSize = new Size(hoogte+150, hoogte);
 
 // Bitmap en Label aanmaken
-int breedte_afb = breedte - 40;
+int breedte_afb = hoogte - 20;
 Bitmap plaatje = new Bitmap(breedte_afb, breedte_afb);
 Label afbeelding = new Label();
 scherm.Controls.Add(afbeelding);
 afbeelding.Image = plaatje;
-afbeelding.Location = new Point(20, 110);
+afbeelding.Location = new Point(160, 10);
 afbeelding.Size = new Size(breedte_afb, breedte_afb);
+
+
+// Buttons aanmaken
+Button knop = new Button();
+scherm.Controls.Add(knop);
+knop.Location = new Point(20, 300);
+knop.Text = "GO";
+knop.Size = new Size(120, 50);
+
+// Textinvoer
+TextBox tekstbox_schaal = new TextBox();
+scherm.Controls.Add(tekstbox_schaal);
+tekstbox_schaal.Location = new Point(50, 100);
+
+
+// text schaal
+Label schaal = new Label();
+
+
 
 
 // Berekent het Mandelgetal van punt (x, y).
@@ -64,9 +83,10 @@ int mandelgetal(double x, double y, int max)
     double y = y_max - py * (y_max - y_min) / (breedte_afb - 1); // Hier doen we - i.p.v. +, omdat pixels boven beginnen
     return (x, y);
 }
+double schaal = 0.01;
+double x_min = schaal *-200, x_max = schaal * 200;
+double y_min = schaal * -200, y_max = schaal * 200;
 
-double x_min = -2.0, x_max = 2.0;
-double y_min = -2.0, y_max = 2.0;
 
 int max = 1000; // Kies hier de max herhalingen
 int px = 0, py = 0; // Begin bij pixel (0,0)
