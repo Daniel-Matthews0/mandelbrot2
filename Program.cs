@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using System.Drawing;
+using Microsoft.VisualBasic.Logging;
+
 
 // Afmetingen Form bepalen
 int hoogte = 0;
@@ -47,7 +50,8 @@ knop.Size = new Size(120, 50);
 // Beginwaardes
 double schaal = 4.0 / breedte_afb;
 double x = 0.0, y = 0.0;
-int max = 1000;
+int max = 300;
+int baseMax = max;
 
 // Tekstbox maken
 TextBox tekstbox_schaal = new TextBox();
@@ -122,8 +126,8 @@ void go(object o, EventArgs e)
 
 knop.Click += go;
 
-// Berekent het Mandelgetal van punt (x, y).
-int mandelgetal(double x, double y, int max)
+// Berekent het Mandelgetal van punt (x, y) en geeft reele en imaginaire deler (a en b) terug voor smoothcolouring
+ (double, double, int) mandelgetal(double x, double y, int max)
 {
     double a = 0, b = 0;// start (a,b) = (0,0)
     int t = 0;
@@ -138,7 +142,7 @@ int mandelgetal(double x, double y, int max)
         b = bn;
         t++;
     }
-    return t;
+    return (a, b, t);
 }
 
 // Zet pixel coördinaten om in wiskundige coördinaten
@@ -167,18 +171,21 @@ void generate(double x, double y, double schaal, int max)
         for (int py = 0; py < breedte_afb; py++) // Ga langs alle y coördinaten
         {
             (double x2, double y2) = coördinaat(px, py, x_min, x_max, y_min, y_max);
-            int m_getal = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel
+            var (a, b, m_getal) = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel + geef a en b mee
             if (m_getal == max)                        // Check of het mandelgetal groter is dan max
                 plaatje.SetPixel(px, py, Color.Black);
             else
             {
-                // Zet mandelgetal om naar kleur waarde
-                // (int) zorgt ervoor dat alles int's worden
-                // 255.0 is met punt zodat er correct wordt gedeelt
-                int kleurwaarde = (int)(255.0 * m_getal / max);
-                Color kleur = Color.FromArgb(kleurwaarde % 256, (kleurwaarde * 2) % 256, (kleurwaarde * 5) % 256);
-                plaatje.SetPixel(px, py, kleur);
+                // -----Eenvoudige kleurtoekenning (niet meer gebruikt)-----
+                // int kleurwaarde = (int)(255.0 * m_getal / max);
+                // Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde * 2 % 256, kleurwaarde * 5 % 256);
+                // plaatje.SetPixel(px, py, kleur);
 
+                double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
+                double smooth_kleurwaarde = m_getal + 1 - Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
+                int kleurwaarde = (int)(255.0 * smooth_kleurwaarde / max);
+                Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde * 2 % 256, kleurwaarde * 5 % 256);
+                plaatje.SetPixel(px, py, kleur);
             }
 
         }
@@ -206,9 +213,15 @@ void muisKlik(object s, MouseEventArgs ea)
 
     // Zoom in of uit
     if (ea.Button == MouseButtons.Left)
+    {
         schaal *= 0.5;
+        max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));   // past max iteraties logaritmisch aan zodat detail bij inzoomen bewaart blijft
+    }
     if (ea.Button == MouseButtons.Right)
-        schaal *= 2.0;
+        {
+            schaal *= 2.0;
+            max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));  
+        }
     update();
 }
 
