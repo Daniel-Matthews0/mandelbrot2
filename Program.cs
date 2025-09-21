@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
 
@@ -170,13 +170,22 @@ void generate(double x, double y, double schaal, int max)
             int m_getal = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel
             if (m_getal == max)                        // Check of het mandelgetal groter is dan max
                 plaatje.SetPixel(px, py, Color.Black);
-            else if (m_getal % 2 == 0)                  // Kleurt even mandelgetallen zwart
-                plaatje.SetPixel(px, py, Color.Black);
-            else                                        // Kleurt de rest wit
-                plaatje.SetPixel(px, py, Color.White);
+            else
+            {
+                // Zet mandelgetal om naar kleur waarde
+                // (int) zorgt ervoor dat alles int's worden
+                // 255.0 is met punt zodat er correct wordt gedeelt
+                int kleurwaarde = (int)(255.0 * m_getal / max);
+                Color kleur = Color.FromArgb(kleurwaarde % 256, (kleurwaarde * 2) % 256, (kleurwaarde * 5) % 256);
+                plaatje.SetPixel(px, py, kleur);
+
+            }
+
         }
     }
 }
+
+
 
 // Registreer muis inputs en zoom in of uit
 void muisKlik(object s, MouseEventArgs ea)
