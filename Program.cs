@@ -53,6 +53,11 @@ double x = 0.0, y = 0.0;
 int max = 300;
 int baseMax = max;
 
+int rood_multiplier = 3;
+int groen_multiplier = 7;
+int blauw_multiplier = 5;
+
+
 // Tekstbox maken
 TextBox tekstbox_schaal = new TextBox();
 scherm.Controls.Add(tekstbox_schaal);
@@ -95,6 +100,18 @@ Label maxtekst = new Label();
 scherm.Controls.Add(maxtekst);
 maxtekst.Location = new Point(10, 200);
 maxtekst.Text = "max aantal:";
+
+//Slider maken
+TrackBar slider = new TrackBar();
+scherm.Controls.Add(slider);
+slider.Minimum = 0;
+slider.Maximum = 255;
+slider.Value = 50;
+slider.TickFrequency = 1;
+slider.Location = new Point(30, 30);
+
+
+
 
 //plaatje en textboxen updaten
 void update()
@@ -172,6 +189,7 @@ void generate(double x, double y, double schaal, int max)
         {
             (double x2, double y2) = coördinaat(px, py, x_min, x_max, y_min, y_max);
             var (a, b, m_getal) = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel + geef a en b mee
+
             if (m_getal == max)                        // Check of het mandelgetal groter is dan max
                 plaatje.SetPixel(px, py, Color.Black);
             else
@@ -184,7 +202,7 @@ void generate(double x, double y, double schaal, int max)
                 double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
                 double smooth_kleurwaarde = m_getal + 1 - Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
                 int kleurwaarde = (int)(255.0 * smooth_kleurwaarde / max);
-                Color kleur = Color.FromArgb(kleurwaarde * 0 % 256, kleurwaarde * 5 % 256, kleurwaarde * 0 % 256);
+                Color kleur = Color.FromArgb(kleurwaarde * rood_multiplier % 256, kleurwaarde * groen_multiplier % 256, kleurwaarde * blauw_multiplier % 256);
                 plaatje.SetPixel(px, py, kleur);
             }
 
