@@ -177,14 +177,14 @@ void generate(double x, double y, double schaal, int max)
             else
             {
                 // -----Eenvoudige kleurtoekenning (niet meer gebruikt)-----
-                // int kleurwaarde = (int)(255.0 * m_getal / max);
-                // Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde * 2 % 256, kleurwaarde * 5 % 256);
-                // plaatje.SetPixel(px, py, kleur);
+                //int kleurwaarde = m_getal;
+                //Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde % 256, kleurwaarde % 256);
+                //plaatje.SetPixel(px, py, kleur);
 
                 double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
                 double smooth_kleurwaarde = m_getal + 1 - Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
                 int kleurwaarde = (int)(255.0 * smooth_kleurwaarde / max);
-                Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde * 2 % 256, kleurwaarde * 5 % 256);
+                Color kleur = Color.FromArgb(kleurwaarde * 0 % 256, kleurwaarde * 5 % 256, kleurwaarde * 0 % 256);
                 plaatje.SetPixel(px, py, kleur);
             }
 
