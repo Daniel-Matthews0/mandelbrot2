@@ -133,10 +133,18 @@ void update()
 
 void go(object o, EventArgs e)
 {
-    schaal = double.Parse(tekstbox_schaal.Text);
-    x = double.Parse(tekstbox_x.Text);
-    y = double.Parse(tekstbox_y.Text);
-    max = int.Parse(tekstbox_max.Text);
+    List a = [tekstbox_schaal, tekstbox_x, tekstbox_y, tekstbox_max];
+    
+    try
+    {
+        max = int.Parse(tekstbox_max.Text);
+    }
+    catch (Exception)
+    {
+        tekstbox_max.BackColor = Color.Red;
+    }
+
+    if 
     update();
 }
 
