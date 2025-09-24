@@ -56,9 +56,10 @@ int rood_multiplier = 1;
 int groen_multiplier = 2;
 int blauw_multiplier = 3;
 
-double saturation = 0.9;
+double saturation = 1.0;
 double value = 1.0;
-double c = 1.0;
+double c = 5.0;
+double offset = 210;
 
 
 // Buttons aanmaken
@@ -196,8 +197,8 @@ double hue(int m_getal, double  a, double b, int max, double c)
 
 Color hsv_naar_rgb(double h, double s, double v)
 {
-    int sector = (int) Math.Floor(h / 60);
-    double f = h / 60 - sector;
+    int sector = (int)Math.Floor(h / 60) % 6;
+    double f = h / 60 - Math.Floor(h / 60);
 
     double p = v * (1 - s);
     double q = v * (1 - f * s);
@@ -240,7 +241,7 @@ void generate(double x, double y, double schaal, int max)
                 plaatje.SetPixel(px, py, Color.Black);
             else
             {
-                double h = hue(m_getal, a, b, max, c);
+                double h = hue(m_getal, a, b, max, c) + offset;
                 plaatje.SetPixel(px, py, hsv_naar_rgb(h, saturation, value));
             }
 
@@ -270,14 +271,13 @@ void muisKlik(object s, MouseEventArgs ea)
     // Zoom in of uit
     if (ea.Button == MouseButtons.Left)
     {
-        schaal *= 0.5;
-        max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));   // past max iteraties logaritmisch aan zodat detail bij inzoomen bewaart blijft
+        schaal *= 0.5;  
     }
-    if (ea.Button == MouseButtons.Right)
-        {
-            schaal *= 2.0;
-            max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));  
-        }
+    else if (ea.Button == MouseButtons.Right)
+    {
+        schaal *= 2.0;
+    }
+    max = (int)Math.Clamp(200 + 100 * (Math.Log10(1 / schaal)) * (Math.Log10(1 / schaal)), 500, 10000); // past max iteraties logaritmisch aan zodat detail bij inzoomen bewaart blijft
     update();
 }
 
