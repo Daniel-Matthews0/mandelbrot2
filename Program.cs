@@ -48,58 +48,47 @@ knop.Size = new Size(120, 50);
 
 
 // Beginwaardes
-double schaal = 4.0 / breedte_afb;
-double x = 0.0, y = 0.0;
+double schaal = 3.0 / breedte_afb;
+double x = -0.6, y = 0.0;
 int max = 300;
 int baseMax = max;
 
-int rood_multiplier = 3;
-int groen_multiplier = 7;
-int blauw_multiplier = 5;
+int rood_multiplier = 1;
+int groen_multiplier = 2;
+int blauw_multiplier = 3;
 
 
 // Tekstbox maken
-TextBox tekstbox_schaal = new TextBox();
-scherm.Controls.Add(tekstbox_schaal);
-tekstbox_schaal.Location = new Point(70, 80);
-tekstbox_schaal.Size = new Size(130, 50);
+TextBox maak_textbox(int x, int y, int breedte, int hoogte)
+{
+    TextBox naam = new TextBox();
+    scherm.Controls.Add(naam);
+    naam.Location = new Point(x, y);
+    naam.Size = new Size(breedte, hoogte);
+    return naam;
+}
 
-TextBox tekstbox_x = new TextBox();
-scherm.Controls.Add(tekstbox_x);
-tekstbox_x.Location = new Point(70, 120);
-tekstbox_x.Size = new Size(130, 50);
-
-TextBox tekstbox_y = new TextBox();
-scherm.Controls.Add(tekstbox_y);
-tekstbox_y.Location = new Point(70, 160);
-tekstbox_y.Size = new Size(130, 50);
-
-TextBox tekstbox_max = new TextBox();
-scherm.Controls.Add(tekstbox_max);
-tekstbox_max.Location = new Point(70, 200);
-tekstbox_max.Size = new Size(130, 50);
+TextBox tekstbox_schaal = maak_textbox(70, 80, 130, 50);
+TextBox tekstbox_x = maak_textbox(70, 120, 130, 50);
+TextBox tekstbox_y = maak_textbox(70, 160, 130, 50);
+TextBox tekstbox_max = maak_textbox(70, 200, 130, 50);
 
 
 // text voor de tekstbox maken
-Label schaaltekst = new Label();
-scherm.Controls.Add(schaaltekst);
-schaaltekst.Location = new Point(10, 80);
-schaaltekst.Text = "schaal:";
+Label maak_label(int x, int y, string tekst)
+{
+    Label naam = new Label();
+    scherm.Controls.Add(naam);
+    naam.Location = new Point(x, y);
+    naam.Text = tekst;
+    return naam;
+}
 
-Label middenxtekst = new Label();
-scherm.Controls.Add(middenxtekst);
-middenxtekst.Location = new Point(10, 120);
-middenxtekst.Text = "midden x:";
+Label schaaltekst = maak_label(10, 80, "schaal:");
+Label middenxtekst = maak_label(10, 120, "midden x:");
+Label middenytekst = maak_label(10, 160, "midden y:");
+Label maxtekst = maak_label(10, 200, "iteraties:");
 
-Label middenytekst = new Label();
-scherm.Controls.Add(middenytekst);
-middenytekst.Location = new Point(10, 160);
-middenytekst.Text = "midden y:";
-
-Label maxtekst = new Label();
-scherm.Controls.Add(maxtekst);
-maxtekst.Location = new Point(10, 200);
-maxtekst.Text = "max aantal:";
 
 //Slider maken
 TrackBar slider_rood = new TrackBar();
@@ -200,8 +189,8 @@ void generate(double x, double y, double schaal, int max)
                 //plaatje.SetPixel(px, py, kleur);
 
                 double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
-                double smooth_kleurwaarde = m_getal + 1 - Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
-                int kleurwaarde = (int)(255.0 * smooth_kleurwaarde / max);
+                double smooth_kleurwaarde = m_getal + 1- Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
+                int kleurwaarde = (int)(360*smooth_kleurwaarde/max);
                 Color kleur = Color.FromArgb(kleurwaarde * rood_multiplier % 256, kleurwaarde * groen_multiplier % 256, kleurwaarde * blauw_multiplier % 256);
                 plaatje.SetPixel(px, py, kleur);
             }
