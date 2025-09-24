@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Drawing;
 using Microsoft.VisualBasic.Logging;
+using System.ComponentModel.DataAnnotations;
 
 
 // Afmetingen Form bepalen
@@ -91,13 +92,22 @@ Label maxtekst = maak_label(10, 200, "iteraties:");
 
 
 //Slider maken
-TrackBar slider_rood = new TrackBar();
-scherm.Controls.Add(slider_rood);
-slider_rood.Minimum = 0;
-slider_rood.Maximum = 255;
-slider_rood.Value = rood_multiplier;
-slider_rood.TickFrequency = 1;
-slider_rood.Location = new Point(30, 30);
+TrackBar maak_trackbar(int min, int max, int value, int tick, int x, int y)
+{
+    TrackBar naam = new TrackBar();
+    scherm.Controls.Add(naam);
+    naam.Minimum = min;
+    naam.Maximum = max;
+    naam.Value = value;
+    naam.TickFrequency = tick;
+    naam.Location = new Point(x, y);
+    return naam;
+    }
+
+TrackBar slider_rood = maak_trackbar(0, 255, rood_multiplier, 1, 30, 230);
+TrackBar slider_blauw = maak_trackbar(0, 255, blauw_multiplier, 1, 30, 260);
+TrackBar slider_groen = maak_trackbar(0, 255, groen_multiplier, 1, 30, 290);
+
 
 
 
