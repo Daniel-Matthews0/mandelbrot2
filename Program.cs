@@ -109,9 +109,6 @@ TrackBar slider_blauw = maak_trackbar(0, 255, blauw_multiplier, 1, 30, 260);
 TrackBar slider_groen = maak_trackbar(0, 255, groen_multiplier, 1, 30, 290);
 
 
-
-
-
 //plaatje en textboxen updaten
 void update()
 {
@@ -133,18 +130,11 @@ void update()
 
 void go(object o, EventArgs e)
 {
-    List a = [tekstbox_schaal, tekstbox_x, tekstbox_y, tekstbox_max];
-    
-    try
-    {
-        max = int.Parse(tekstbox_max.Text);
-    }
-    catch (Exception)
-    {
-        tekstbox_max.BackColor = Color.Red;
-    }
+    schaal = double.Parse(tekstbox_schaal.Text);
+    x = double.Parse(tekstbox_x.Text);
+    y = double.Parse(tekstbox_y.Text);
+    max = int.Parse(tekstbox_max.Text);
 
-    if 
     update();
 }
 
