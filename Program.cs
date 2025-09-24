@@ -28,6 +28,8 @@ while (hoogte < 300 || hoogte > 900)
 // Maak een Form aan
 Form scherm = new Form();
 scherm.Text = "Mandelbrot";
+
+scherm.BackColor = Color.FromArgb(250, 250, 250);
 scherm.ClientSize = new Size(hoogte + 200, hoogte);
 
 // Bitmap en Label aanmaken
@@ -104,9 +106,9 @@ TrackBar maak_trackbar(int min, int max, int value, int tick, int x, int y)
     return naam;
     }
 
-TrackBar slider_rood = maak_trackbar(0, 255, rood_multiplier, 1, 30, 230);
-TrackBar slider_blauw = maak_trackbar(0, 255, blauw_multiplier, 1, 30, 260);
-TrackBar slider_groen = maak_trackbar(0, 255, groen_multiplier, 1, 30, 290);
+TrackBar slider_rood = maak_trackbar(0, 255, rood_multiplier, 1, 30, 330);
+TrackBar slider_blauw = maak_trackbar(0, 255, blauw_multiplier, 1, 30, 360);
+TrackBar slider_groen = maak_trackbar(0, 255, groen_multiplier, 1, 30, 390);
 
 
 //plaatje en textboxen updaten
