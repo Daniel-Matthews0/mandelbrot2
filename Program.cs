@@ -102,13 +102,13 @@ maxtekst.Location = new Point(10, 200);
 maxtekst.Text = "max aantal:";
 
 //Slider maken
-TrackBar slider = new TrackBar();
-scherm.Controls.Add(slider);
-slider.Minimum = 0;
-slider.Maximum = 255;
-slider.Value = 50;
-slider.TickFrequency = 1;
-slider.Location = new Point(30, 30);
+TrackBar slider_rood = new TrackBar();
+scherm.Controls.Add(slider_rood);
+slider_rood.Minimum = 0;
+slider_rood.Maximum = 255;
+slider_rood.Value = rood_multiplier;
+slider_rood.TickFrequency = 1;
+slider_rood.Location = new Point(30, 30);
 
 
 
