@@ -6,6 +6,10 @@ using Microsoft.VisualBasic.Logging;
 using System.ComponentModel.DataAnnotations;
 
 
+
+
+
+
 // Afmetingen Form bepalen
 int hoogte = 0;
 while (hoogte < 300 || hoogte > 900)
@@ -42,14 +46,6 @@ afbeelding.Location = new Point(210, 10);
 afbeelding.Size = new Size(breedte_afb, breedte_afb);
 
 
-// Buttons aanmaken
-Button knop = new Button();
-scherm.Controls.Add(knop);
-knop.Location = new Point(20, 230);
-knop.Text = "GO";
-knop.Size = new Size(120, 50);
-
-
 // Beginwaardes
 double schaal = 3.0 / breedte_afb;
 double x = -0.6, y = 0.0;
@@ -59,6 +55,21 @@ int baseMax = max;
 int rood_multiplier = 1;
 int groen_multiplier = 2;
 int blauw_multiplier = 3;
+
+double saturation = 0.9;
+double value = 1.0;
+double c = 1.0;
+
+
+// Buttons aanmaken
+Button knop = new Button();
+scherm.Controls.Add(knop);
+knop.Location = new Point(20, 230);
+knop.Text = "GO";
+knop.Size = new Size(120, 50);
+
+
+
 
 
 // Tekstbox maken
@@ -172,6 +183,42 @@ knop.Click += go;
     return (x, y);
 }
 
+
+
+double hue(int m_getal, double  a, double b, int max, double c)
+{
+
+    double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
+    double smooth_kleurwaarde = m_getal + 1- Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
+    double h = (360 *c * smooth_kleurwaarde / max) % 360;
+    return h;
+}
+
+Color hsv_naar_rgb(double h, double s, double v)
+{
+    int sector = (int) Math.Floor(h / 60);
+    double f = h / 60 - sector;
+
+    double p = v * (1 - s);
+    double q = v * (1 - f * s);
+    double t = v * (1 - (1 - f) * s);
+
+    double r = 0, g = 0, b = 0;
+    if (sector == 0) { r = v; g = t; b = p; }
+    else if (sector == 1) { r = q; g = v; b = p; }
+    else if (sector == 2) { r = p; g = v; b = t; }
+    else if (sector == 3) { r = p; g = q; b = v; }
+    else if (sector == 4) { r = t; g = p; b = v; }
+    else if (sector == 5) { r = v; g = p; b = q; }
+
+    int R = (int)(r * 255);
+    int G = (int)(g * 255);
+    int B = (int)(b * 255);
+    return Color.FromArgb(R, G, B);
+}
+
+
+
 // Genereer de mandelbrot met een bepaald middenpunt
 void generate(double x, double y, double schaal, int max)
 {
@@ -193,16 +240,8 @@ void generate(double x, double y, double schaal, int max)
                 plaatje.SetPixel(px, py, Color.Black);
             else
             {
-                // -----Eenvoudige kleurtoekenning (niet meer gebruikt)-----
-                //int kleurwaarde = m_getal;
-                //Color kleur = Color.FromArgb(kleurwaarde % 256, kleurwaarde % 256, kleurwaarde % 256);
-                //plaatje.SetPixel(px, py, kleur);
-
-                double afstand_oorsprong_punt = Math.Sqrt(a * a + b * b);
-                double smooth_kleurwaarde = m_getal + 1- Math.Log(Math.Log(afstand_oorsprong_punt)) / Math.Log(2.0);
-                int kleurwaarde = (int)(360*smooth_kleurwaarde/max);
-                Color kleur = Color.FromArgb(kleurwaarde * rood_multiplier % 256, kleurwaarde * groen_multiplier % 256, kleurwaarde * blauw_multiplier % 256);
-                plaatje.SetPixel(px, py, kleur);
+                double h = hue(m_getal, a, b, max, c);
+                plaatje.SetPixel(px, py, hsv_naar_rgb(h, saturation, value));
             }
 
         }
