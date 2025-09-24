@@ -4,51 +4,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using Microsoft.VisualBasic.Logging;
 
-
-// Afmetingen Form bepalen
-int hoogte = 0;
-while (hoogte < 300 || hoogte > 900)
-{
-    Console.Write("Hoeveel pixels hoog is het scherm (300-900): ");
-    string user_input = Console.ReadLine();
-
-    // Checken of het een geldig getal is
-    try
-    {
-        hoogte = int.Parse(user_input);
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine($"'{user_input}' is geen geheel getal.");
-    }
-}
-
-
-// Maak een Form aan
-Form scherm = new Form();
-scherm.Text = "Mandelbrot";
-scherm.ClientSize = new Size(hoogte + 200, hoogte);
-
-// Bitmap en Label aanmaken
-int breedte_afb = hoogte - 20;
-Bitmap plaatje = new Bitmap(breedte_afb, breedte_afb);
-Label afbeelding = new Label();
-scherm.Controls.Add(afbeelding);
-afbeelding.Image = plaatje;
-afbeelding.Location = new Point(210, 10);
-afbeelding.Size = new Size(breedte_afb, breedte_afb);
-
-
-// Buttons aanmaken
-Button knop = new Button();
-scherm.Controls.Add(knop);
-knop.Location = new Point(20, 230);
-knop.Text = "GO";
-knop.Size = new Size(120, 50);
-
-
 // Beginwaardes
-double schaal = 4.0 / breedte_afb;
 double x = 0.0, y = 0.0;
 int max = 300;
 int baseMax = max;
@@ -56,6 +12,76 @@ int baseMax = max;
 int rood_multiplier = 3;
 int groen_multiplier = 7;
 int blauw_multiplier = 5;
+
+// Maak een Form aan
+Form scherm = new Form();
+scherm.Text = "Mandelbrot";
+
+// Afmetingen Form bepalen
+int hoogte = 0;
+while (true)
+{
+    Console.Write("Fullscreen of Windowed? 'f'/'w'");
+    string antwoord = Console.ReadLine();
+
+    if (antwoord == "w")
+    {
+        while (hoogte < 300 || hoogte > 900)
+        {
+            Console.Write("Hoeveel pixels hoog is het scherm (300-900): ");
+            string user_input = Console.ReadLine();
+
+            // Checken of het een geldig getal is
+            try
+            {
+                hoogte = int.Parse(user_input);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"'{user_input}' is geen geheel getal.");
+            }
+        }
+        scherm.ClientSize = new Size(hoogte + 200, hoogte);
+        break;
+    }
+
+    else if (antwoord == "f")
+    {
+        scherm.FormBorderStyle = FormBorderStyle.None; // geen titelbalk / randen
+        scherm.WindowState = FormWindowState.Maximized; // fullscreen;
+        Application.DoEvents();
+        break;
+    }
+
+    else
+    {
+        Console.WriteLine($"'{antwoord}' is niet geldig.");
+    }
+
+}
+
+// bitmap maken
+Label afbeelding = new Label();
+
+int hoogte_afb = Screen.FromControl(scherm).WorkingArea.Height;
+
+int breedte = Screen.FromControl(scherm).WorkingArea.Width;
+int breedte_afb = breedte - 200;
+
+Bitmap plaatje = new Bitmap(breedte_afb, hoogte_afb);
+afbeelding.Image = plaatje;
+afbeelding.Location = new Point(200, 0);
+afbeelding.Size = new Size(breedte_afb, hoogte_afb);
+scherm.Controls.Add(afbeelding);
+
+double schaal = 4.0 / breedte_afb;
+
+// Buttons aanmaken
+Button knop = new Button();
+scherm.Controls.Add(knop);
+knop.Location = new Point(20, 230);
+knop.Text = "GO";
+knop.Size = new Size(120, 50);
 
 
 // Tekstbox maken
@@ -111,8 +137,6 @@ slider_rood.TickFrequency = 1;
 slider_rood.Location = new Point(30, 30);
 
 
-
-
 //plaatje en textboxen updaten
 void update()
 {
@@ -134,18 +158,10 @@ void update()
 
 void go(object o, EventArgs e)
 {
-    List a = [tekstbox_schaal, tekstbox_x, tekstbox_y, tekstbox_max];
-    
-    try
-    {
-        max = int.Parse(tekstbox_max.Text);
-    }
-    catch (Exception)
-    {
-        tekstbox_max.BackColor = Color.Red;
-    }
-
-    if 
+    schaal = double.Parse(tekstbox_schaal.Text);
+    x = double.Parse(tekstbox_x.Text);
+    y = double.Parse(tekstbox_y.Text);
+    max = int.Parse(tekstbox_max.Text);
     update();
 }
 
@@ -177,7 +193,7 @@ knop.Click += go;
     // (x_max - x_min) vertelt hoe breed de x-as "wiskundig" moet zijn
     // en gedeeld door (breedte_afb - 1) schaal je dat naar het aantal pixels
 
-    double y = y_max - py * (y_max - y_min) / (breedte_afb - 1); // Hier doen we - i.p.v. +, omdat pixels boven beginnen
+    double y = y_max - py * (y_max - y_min) / (hoogte_afb - 1); // Hier doen we - i.p.v. +, omdat pixels boven beginnen
     return (x, y);
 }
 
@@ -185,15 +201,16 @@ knop.Click += go;
 void generate(double x, double y, double schaal, int max)
 {
     double domein = breedte_afb * schaal;
+    double bereik = hoogte_afb * schaal;
 
     double x_min = x - 0.5 * domein;
     double x_max = x + 0.5 * domein;
-    double y_min = y - 0.5 * domein;
-    double y_max = y + 0.5 * domein;
+    double y_min = y - 0.5 * bereik;
+    double y_max = y + 0.5 * bereik;
 
     for (int px = 0; px < breedte_afb; px++)   // Ga langs alle x coördinaten
     {
-        for (int py = 0; py < breedte_afb; py++) // Ga langs alle y coördinaten
+        for (int py = 0; py < hoogte_afb; py++) // Ga langs alle y coördinaten
         {
             (double x2, double y2) = coördinaat(px, py, x_min, x_max, y_min, y_max);
             var (a, b, m_getal) = mandelgetal(x2, y2, max);      // Bereken het mandelgetal van deze pixel + geef a en b mee
@@ -224,12 +241,13 @@ void generate(double x, double y, double schaal, int max)
 void muisKlik(object s, MouseEventArgs ea)
 {
     double domein = breedte_afb * schaal; // Assenstelsel lengte van het domein/bereik
+    double bereik = hoogte_afb * schaal;
 
     // Min en max van x en y berekenen m.b.v. domein en middelpunt
     double x_min = x - domein / 2;
     double x_max = x + domein / 2;
-    double y_min = y - domein / 2;
-    double y_max = y + domein / 2;
+    double y_min = y - bereik / 2;
+    double y_max = y + bereik / 2;
 
     // Bereken (x, y) van klik en zet daar het middelpunt
     (double x_klik, double y_klik) = coördinaat(ea.X, ea.Y, x_min, x_max, y_min, y_max);
@@ -244,10 +262,10 @@ void muisKlik(object s, MouseEventArgs ea)
         max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));   // past max iteraties logaritmisch aan zodat detail bij inzoomen bewaart blijft
     }
     if (ea.Button == MouseButtons.Right)
-        {
-            schaal *= 2.0;
-            max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));  
-        }
+    {
+        schaal *= 2.0;
+        max = (int)(baseMax * Math.Log(1.0 / (120 * schaal)));
+    }
     update();
 }
 
